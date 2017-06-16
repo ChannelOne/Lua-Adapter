@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (c) 2015-2017 JlnWntr (jlnwntr@gmail.com)
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -113,7 +113,7 @@ bool LuaAdapter::GetGlobal(const char *name) {
 	return true;
 }
 
-bool LuaAdapter::Get(const char *name, int &result) {
+bool LuaAdapter::GetGlobal(const char *name, int &result) {
 	if (this->GetGlobal(name) == false)
 		return false;
 
@@ -129,7 +129,7 @@ bool LuaAdapter::Get(const char *name, int &result) {
 	return true;
 }
 
-bool LuaAdapter::Get(const char *name, std::string &result) {
+bool LuaAdapter::GetGlobal(const char *name, std::string &result) {
 	if (this->GetGlobal(name) == false)
 		return false;
 
@@ -145,7 +145,7 @@ bool LuaAdapter::Get(const char *name, std::string &result) {
 	return true;
 }
 
-bool LuaAdapter::Get(const char *name, double &result) {
+bool LuaAdapter::GetGlobal(const char *name, double &result) {
 	if (this->GetGlobal(name) == false)
 		return false;
 
@@ -161,15 +161,15 @@ bool LuaAdapter::Get(const char *name, double &result) {
 	return true;
 }
 
-bool LuaAdapter::Get(const char *name, float &result) {
+bool LuaAdapter::GetGlobal(const char *name, float &result) {
 	double temp = 0.0;
-	if (this->Get(name, temp) == false)
+	if (this->GetGlobal(name, temp) == false)
 		return false;
 	result = (float)temp;
 	return true;
 }
 
-bool LuaAdapter::Get(const char *name, bool &result) {
+bool LuaAdapter::GetGlobal(const char *name, bool &result) {
 	if (this->GetGlobal(name) == false)
 		return false;
 
@@ -185,10 +185,59 @@ bool LuaAdapter::Get(const char *name, bool &result) {
 	return true;
 }
 
+bool LuaAdapter::Get(int &result) {
+
+	if (lua_isnumber(this->Lua, -1) == false) {
+		return false;
+	}
+	result = lua_tointeger(this->Lua, -1);
+	if (this->print)
+		std::cout << this->outputPrefix << "get top " << result
+		<< std::endl;
+	return true;
+}
+
+bool LuaAdapter::Get(std::string &result) {
+	if (lua_type(this->Lua, -1) != LUA_TSTRING) {
+		return false;
+	}
+	result = lua_tostring(this->Lua, -1);
+	if (this->print)
+		std::cout << this->outputPrefix << "get top string '" << result << std::endl;
+	return true;
+}
+
+bool LuaAdapter::Get(double &result) {
+	if (lua_isnumber(this->Lua, -1) == false) {
+		return false;
+	}
+	result = lua_tonumber(this->Lua, -1);
+	if (this->print)
+		std::cout << this->outputPrefix << "get top double " << result << std::endl;
+	return true;
+}
+
+bool LuaAdapter::Get(float &result) {
+	double temp = 0.0;
+	if (this->Get(temp) == false)
+		return false;
+	result = (float)temp;
+	return true;
+}
+
+bool LuaAdapter::Get(bool &result) {
+	if (lua_isboolean(this->Lua, -1) == false) {
+		return false;
+	}
+	result = lua_toboolean(this->Lua, -1);
+	if (this->print)
+		std::cout << this->outputPrefix << "get boolean " << result << std::endl;
+	return true;
+}
 bool LuaAdapter::OpenTable(const char *name) {
 	if (this->GetGlobal(name) && lua_istable(this->Lua, -1)) {
 		if (this->print)
-			std::cout << this->outputPrefix << "open table '" << name << "' \n";
+			std::cout << this->outputPrefix << "open table '" << name << std::endl;
 		return true;
 	}
 	this->Pop();

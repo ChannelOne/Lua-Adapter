@@ -83,11 +83,22 @@ public:
 	* @param result value is saved in this variable
 	* @return true on success, false on error
 	*/
-	bool Get(const char *name, int &result);
-	bool Get(const char *name, std::string &result);
-	bool Get(const char *name, double &result);
-	bool Get(const char *name, float &result);
-	bool Get(const char *name, bool &result);
+	bool GetGlobal(const char *name, int &result);
+	bool GetGlobal(const char *name, std::string &result);
+	bool GetGlobal(const char *name, double &result);
+	bool GetGlobal(const char *name, float &result);
+	bool GetGlobal(const char *name, bool &result);
+
+	bool Get(int &result);
+	bool Get(std::string &result);
+	bool Get(double &result);
+	bool Get(float &result);
+	bool Get(bool &result);
+
+	inline int GetTop()
+	{
+		return lua_gettop(Lua);
+	}
 
 	/**
 	* Opens a lua-table
@@ -132,6 +143,27 @@ public:
 	bool GetField(unsigned short int i, int &result);
 	bool GetField(unsigned short int i, double &result);
 	bool GetField(unsigned short int i, float &result);
+
+	/**
+	* Gets a field from an opened table and puts its value on the stack
+	* @param name Name of the field
+	* @return true on success, false on error
+	*/
+	bool GetField(const char *name);
+
+	/**
+	* Gets the i-th (nested) field from an opened table
+	* @param i the i-th field
+	* @return true on success, false on error
+	*/
+	bool GetI(unsigned short int i);
+
+	/**
+	* Gets the value of a globally loaded lua-variable
+	* @param name Name of the vairable
+	* @return true on success, false on error
+	*/
+	bool GetGlobal(const char *name);
 
 	/**
 	* Gets a ("2D"-)field value from an opened table.
@@ -259,24 +291,4 @@ private:
 	bool print;
 	const std::string outputPrefix;
 
-	/**
-	* Gets a field from an opened table and puts its value on the stack
-	* @param name Name of the field
-	* @return true on success, false on error
-	*/
-	bool GetField(const char *name);
-
-	/**
-	* Gets the i-th (nested) field from an opened table
-	* @param i the i-th field
-	* @return true on success, false on error
-	*/
-	bool GetI(unsigned short int i);
-
-	/**
-	* Gets the value of a globally loaded lua-variable
-	* @param name Name of the vairable
-	* @return true on success, false on error
-	*/
-	bool GetGlobal(const char *name);
 };
